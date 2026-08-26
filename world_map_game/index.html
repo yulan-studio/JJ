@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>世界在哪里？国家地图游戏</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">地理小挑战</p>
+        <h1>世界在哪里？</h1>
+        <p class="subtitle">看题目，在地图上找到正确的国家。</p>
+      </div>
+      <div class="header-actions">
+        <div class="language-switch" aria-label="Language">
+          <button id="zhBtn" class="language-button active" type="button">中文</button>
+          <button id="enBtn" class="language-button" type="button">English</button>
+        </div>
+        <button id="restartBtn" class="secondary-button" type="button">重新开始</button>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="游戏成绩">
+      <div><span id="scoreLabel">得分</span><strong id="score">0</strong></div>
+      <div><span id="questionLabel">题目</span><strong><span id="questionNumber">1</span> / 10</strong></div>
+      <div><span id="streakLabel">连对</span><strong id="streak">0</strong></div>
+    </section>
+
+    <section class="question-card">
+      <p id="instruction">请在地图上找到：</p>
+      <h2 id="countryPrompt">加拿大</h2>
+      <p id="hint" class="hint">提示：位于北美洲</p>
+    </section>
+
+    <section class="map-card" aria-label="世界地图答题区">
+      <div class="map-wrap">
+        <svg id="worldMap" class="world-map" viewBox="0 0 1000 510" role="img" aria-labelledby="mapTitle mapDesc">
+          <title id="mapTitle">简化世界地图</title>
+          <desc id="mapDesc">点击地图上的国家标记回答问题</desc>
+          <g id="countryLayer"></g>
+        </svg>
+      </div>
+      <div id="feedback" class="feedback" aria-live="polite">选择一个标记开始答题</div>
+      <button id="nextBtn" class="primary-button" type="button" hidden>下一题</button>
+    </section>
+
+    <section id="gameOver" class="game-over" hidden>
+      <p id="completeLabel" class="eyebrow">挑战完成</p>
+      <h2><span id="finalPrefix">你的得分是</span> <span id="finalScore">0</span> <span id="pointsLabel">分</span></h2>
+      <p id="finalMessage"></p>
+      <button id="playAgainBtn" class="primary-button" type="button">再玩一次</button>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
