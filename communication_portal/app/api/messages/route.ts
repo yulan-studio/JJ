@@ -34,3 +34,28 @@ export async function POST(request: Request) {
   await env.DB.prepare("INSERT INTO messages (author_id, content, type, media_key, reply_to, created_at) VALUES (?, ?, ?, ?, ?, ?)").bind(user.userId, content, type, mediaKey, body.replyTo ?? null, Date.now()).run();
   return Response.json({ ok: true }, { status: 201 });
 }
+
+export async function DELETE(request: Request) {
+  const user = await getAppUser();
+  if (!user) return Response.json({ error: "unauthorized" }, { status: 401 });
+
+  const id = Number(new URL(request.url).searchParams.get("id"));
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    return Response.json({ error: "invalid message id" }, { status: 400 });
+  }
+
+  const message = await env.DB.prepare("SELECT author_id AS authorId, media_key AS mediaKey FROM messages WHERE id = ?")
+    .bind(id)
+    .first<{ authorId: string; mediaKey: string | null }>();
+  if (!message) return Response.json({ error: "message not found" }, { status: 404 });
+  if (message.authorId !== user.userId) {
+    return Response.json({ error: "you can only delete your own messages" }, { status: 403 });
+  }
+
+  await env.DB.batch([
+    env.DB.prepare("UPDATE messages SET reply_to = NULL WHERE reply_to = ?").bind(id),
+    env.DB.prepare("DELETE FROM messages WHERE id = ? AND author_id = ?").bind(id, user.userId),
+  ]);
+  if (message.mediaKey) await env.BUCKET.delete(message.mediaKey).catch(() => undefined);
+  return Response.json({ ok: true });
+}
