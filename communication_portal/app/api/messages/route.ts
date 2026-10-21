@@ -1,8 +1,8 @@
 import { env } from "cloudflare:workers";
-import { getCloudflareUser } from "../../cloudflare-auth";
+import { getAppUser } from "../../auth";
 
 async function ensureParticipant() {
-  const user = await getCloudflareUser();
+  const user = await getAppUser();
   if (!user) return null;
   const existing = await env.DB.prepare("SELECT user_id FROM participants WHERE user_id = ?").bind(user.userId).first();
   if (!existing) {

@@ -1,8 +1,8 @@
 import { env } from "cloudflare:workers";
-import { getCloudflareUser } from "../../../cloudflare-auth";
+import { getAppUser } from "../../../auth";
 
 export async function GET(_request: Request, context: { params: Promise<{ key: string[] }> }) {
-  const user = await getCloudflareUser();
+  const user = await getAppUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
   const { key } = await context.params;
   const object = await env.BUCKET.get(key.join("/"));

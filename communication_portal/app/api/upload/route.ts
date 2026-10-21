@@ -1,8 +1,8 @@
 import { env } from "cloudflare:workers";
-import { getCloudflareUser } from "../../cloudflare-auth";
+import { getAppUser } from "../../auth";
 
 export async function POST(request: Request) {
-  const user = await getCloudflareUser();
+  const user = await getAppUser();
   if (!user) return Response.json({ error: "unauthorized" }, { status: 401 });
   const form = await request.formData();
   const file = form.get("file");

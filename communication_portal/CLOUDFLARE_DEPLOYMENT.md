@@ -30,18 +30,17 @@ pnpm wrangler d1 migrations apply DB --remote
 
 随后重新部署一次，确认消息接口可以访问。
 
-## 4. 配置 Cloudflare Access
+## 4. 配置两人登录
 
-在 Zero Trust → Access controls → Applications 中创建 Self-hosted application，把 Worker 的域名加入应用，并创建只允许你与 JJ 邮箱的 Allow 策略。
-
-在 Worker 的变量或 Builds 环境变量中设置：
+网站使用自己的用户名密码登录，不需要启用 Cloudflare Access。请在 Worker 的 Settings → Variables and Secrets 中添加三个加密 Secret：
 
 ```text
-CF_ACCESS_TEAM_DOMAIN=你的团队名.cloudflareaccess.com
-CF_ACCESS_AUD=Access Application 的 AUD 标签
+MOM_PASSWORD=mom 的密码
+JJ_PASSWORD=JJ 的密码
+SESSION_SECRET=一串至少 32 个字符的随机值
 ```
 
-这两个变量不是密码，但必须与 Access 应用一致。服务端会验证 Cf-Access-Jwt-Assertion 的签名、签发者与 Audience，再使用 JWT 中的 sub 和 email 识别用户。
+三个值都选择 Secret，不要保存为普通明文变量，也不要写入 GitHub。用户名固定为 `mom` 和 `JJ`，大小写不敏感；登录会话使用 HMAC 签名的 HttpOnly Cookie，并在 30 天后到期。
 
 ## 5. 日常更新
 
@@ -51,5 +50,6 @@ CF_ACCESS_AUD=Access Application 的 AUD 标签
 
 - 仓库保持 Private。
 - 不要提交 .dev.vars、API Token 或任何密码。
+- 为两个账户设置不同的强密码；SESSION_SECRET 使用独立随机值，不要复用登录密码。
 - GitHub 仓库权限、Cloudflare 管理权限和网站访问权限彼此独立。
 - D1 和 R2 位于你的 Cloudflare 账户中，聊天数据也由你的账户管理。
