@@ -15,7 +15,7 @@
 - Production branch: main
 - Build command: pnpm build
 - Deploy command: pnpm run deploy
-- Root directory: /
+- Root directory: /communication_portal
 
 项目使用 wrangler.jsonc 中的无 ID 绑定。首次部署时，Wrangler 会在当前 Cloudflare 账户中自动配置 DB（D1）和 BUCKET（R2）。
 
