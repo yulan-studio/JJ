@@ -16,12 +16,12 @@ export default function LoginForm() {
       const response = await fetch("/api/auth/login", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ username, password }) });
       if (!response.ok) {
         const result = await response.json().catch(() => ({})) as { error?: string };
-        setError(result.error ?? "登录失败，请重试");
+        setError(result.error ?? "Sign-in failed. Please try again.");
         return;
       }
       window.location.assign("/");
     } catch {
-      setError("暂时无法登录，请稍后重试");
+      setError("Unable to sign in right now. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -31,13 +31,13 @@ export default function LoginForm() {
     <form className="login-card" onSubmit={submit}>
       <div className="login-symbol">J</div>
       <p className="login-kicker">PRIVATE SPACE</p>
-      <h1>我们之间</h1>
-      <p className="login-copy">只属于 mom 和 JJ 的安静角落</p>
-      <label>用户名<input autoCapitalize="none" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="mom 或 JJ" required /></label>
-      <label>密码<input autoComplete="current-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="请输入密码" required /></label>
+      <h1>Between Us</h1>
+      <p className="login-copy">A quiet space just for mom and JJ</p>
+      <label>Username<input autoCapitalize="none" autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="mom or JJ" required /></label>
+      <label>Password<input autoComplete="current-password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Enter your password" required /></label>
       {error && <p className="login-error" role="alert">{error}</p>}
-      <button type="submit" disabled={loading}>{loading ? "正在进入…" : "进入我们的空间"}</button>
-      <small>登录状态会在这台设备上保留 30 天</small>
+      <button type="submit" disabled={loading}>{loading ? "Signing in…" : "Enter our space"}</button>
+      <small>You will stay signed in on this device for 30 days</small>
     </form>
   );
 }
