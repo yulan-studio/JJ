@@ -5,6 +5,7 @@ export const participants = sqliteTable("participants", {
   displayName: text("display_name").notNull(),
   email: text("email").notNull(),
   joinedAt: integer("joined_at", { mode: "timestamp" }).notNull(),
+  lastSeenAt: integer("last_seen_at", { mode: "timestamp" }),
 });
 
 export const messages = sqliteTable("messages", {

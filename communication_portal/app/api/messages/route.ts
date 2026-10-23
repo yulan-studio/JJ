@@ -1,16 +1,30 @@
 import { env } from "cloudflare:workers";
 import { getAppUser } from "../../auth";
 
+type MessageRow = {
+  id: number;
+  authorId: string;
+  authorName: string;
+  content: string;
+  type: string;
+  mediaKey: string | null;
+  createdAt: number;
+  replyTo: number | null;
+  replyContent: string | null;
+  replyAuthor: string | null;
+};
+
 async function ensureParticipant() {
   const user = await getAppUser();
   if (!user) return null;
+  const now = Date.now();
   const existing = await env.DB.prepare("SELECT user_id FROM participants WHERE user_id = ?").bind(user.userId).first();
   if (!existing) {
     const count = await env.DB.prepare("SELECT COUNT(*) AS total FROM participants").first<{ total: number }>();
     if ((count?.total ?? 0) >= 2) return null;
-    await env.DB.prepare("INSERT INTO participants (user_id, display_name, email, joined_at) VALUES (?, ?, ?, ?)").bind(user.userId, user.displayName, user.email, Date.now()).run();
+    await env.DB.prepare("INSERT INTO participants (user_id, display_name, email, joined_at, last_seen_at) VALUES (?, ?, ?, ?, ?)").bind(user.userId, user.displayName, user.email, now, now).run();
   } else {
-    await env.DB.prepare("UPDATE participants SET display_name = ?, email = ? WHERE user_id = ?").bind(user.displayName, user.email, user.userId).run();
+    await env.DB.prepare("UPDATE participants SET display_name = ?, email = ?, last_seen_at = ? WHERE user_id = ?").bind(user.displayName, user.email, now, user.userId).run();
   }
   return user;
 }
@@ -18,9 +32,31 @@ async function ensureParticipant() {
 export async function GET() {
   const user = await ensureParticipant();
   if (!user) return Response.json({ error: "unauthorized" }, { status: 403 });
-  const result = await env.DB.prepare(`SELECT m.id, m.author_id AS authorId, p.display_name AS authorName, m.content, m.type, m.media_key AS mediaKey, m.created_at AS createdAt, m.reply_to AS replyTo, r.content AS replyContent, rp.display_name AS replyAuthor FROM messages m JOIN participants p ON p.user_id = m.author_id LEFT JOIN messages r ON r.id = m.reply_to LEFT JOIN participants rp ON rp.user_id = r.author_id ORDER BY m.id ASC LIMIT 500`).all();
-  const messages = result.results.map((row: any) => ({ ...row, mediaUrl: row.mediaKey ? `/api/media/${encodeURIComponent(row.mediaKey)}` : null, createdAt: new Date(row.createdAt).toISOString() }));
-  return Response.json({ messages });
+  const result = await env.DB.prepare(`SELECT m.id, m.author_id AS authorId, p.display_name AS authorName, m.content, m.type, m.media_key AS mediaKey, m.created_at AS createdAt, m.reply_to AS replyTo, r.content AS replyContent, rp.display_name AS replyAuthor FROM messages m JOIN participants p ON p.user_id = m.author_id LEFT JOIN messages r ON r.id = m.reply_to LEFT JOIN participants rp ON rp.user_id = r.author_id ORDER BY m.id ASC LIMIT 500`).all<MessageRow>();
+  const now = Date.now();
+  const peer = await env.DB.prepare(`SELECT user_id AS id, display_name AS name, last_seen_at AS lastSeenAt
+    FROM participants WHERE user_id != ? ORDER BY joined_at ASC LIMIT 1`).bind(user.userId).first<{
+      id: string; name: string; lastSeenAt: number | null;
+    }>();
+  const canViewPeerActivity = user.userId === "mom";
+  const messages = result.results.map((row) => ({
+    ...row,
+    mediaUrl: row.mediaKey ? `/api/media/${encodeURIComponent(row.mediaKey)}` : null,
+    createdAt: new Date(row.createdAt).toISOString(),
+  }));
+  return Response.json({
+    messages,
+    peer: peer
+      ? canViewPeerActivity
+        ? {
+            id: peer.id,
+            name: peer.name,
+            isOnline: Boolean(peer.lastSeenAt && peer.lastSeenAt >= now - 15_000),
+            lastSeenAt: peer.lastSeenAt ? new Date(peer.lastSeenAt).toISOString() : null,
+          }
+        : { id: peer.id, name: peer.name }
+      : null,
+  });
 }
 
 export async function POST(request: Request) {
