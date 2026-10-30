@@ -4,8 +4,8 @@ const countryInfo = {
 
 const continentEn={'亚洲':'Asia','非洲':'Africa','南美洲':'South America','北美洲':'North America','欧洲':'Europe','大洋洲':'Oceania','欧洲和亚洲':'Europe and Asia'};
 const ui={
-  zh:{title:'世界在哪里？',subtitle:'看题目，在地图上找到正确的国家。',restart:'重新开始',score:'得分',question:'题目',streak:'连对',timer:'本题剩余',instruction:'请在地图上找到：',hint:'提示：位于',choose:'点击地图上的国家开始答题',correct:'答对了！',inWord:'在',points:'分',wrong:'差一点！你选择了',answer:'，正确答案是',next:'下一题',complete:'挑战完成',finalPrefix:'你的得分是',playAgain:'再玩一次',loading:'正在加载详细世界地图…',loadError:'地图加载失败，请检查网络连接后刷新页面。',great:'太棒了，你是地图高手！',good:'不错！再玩一次，你会记住更多国家。',practice:'继续练习，很快就能环游世界啦！',select:'选择',learn:'国家小知识',founded:'成立/独立',population:'人口（约）',special:'特别之处',famous:'著名地点',speak:'🔊 朗读',stopSpeak:'⏹ 停止朗读',timeout:'时间到！',stats:(correct,total,best)=>`答对 ${correct}/${total} 题 · 正确率 ${Math.round(correct/total*100)}% · 最高连对 ${best}`},
-  en:{title:'Where in the World?',subtitle:'Read the question and find the correct country on the map.',restart:'Restart',score:'Score',question:'Question',streak:'Streak',timer:'Time left',instruction:'Find this country on the map:',hint:'Hint: Located in ',choose:'Click a country on the map to answer',correct:'Correct! ',inWord:' is in ',points:'points',wrong:'Not quite! You selected ',answer:'. The correct answer is ',next:'Next question',complete:'Challenge complete',finalPrefix:'Your score is',playAgain:'Play again',loading:'Loading the detailed world map…',loadError:'The map could not load. Check your connection and refresh the page.',great:'Excellent — you are a map master!',good:'Nice work! Play again to learn even more countries.',practice:'Keep practising — you will know the world in no time!',select:'Select',learn:'Country facts',founded:'Founded / independent',population:'Population (approx.)',special:'What makes it special',famous:'Famous places',speak:'🔊 Read aloud',stopSpeak:'⏹ Stop reading',timeout:'Time’s up!',correctList:'Correct countries',wrongList:'Missed countries',stats:(correct,total,best)=>`${correct}/${total} correct · ${Math.round(correct/total*100)}% accuracy · Best streak ${best}`}
+  zh:{title:'世界在哪里？',subtitle:'看题目，在地图上找到正确的国家。',restart:'重新开始',logout:'退出登录',score:'得分',question:'题目',streak:'连对',timer:'本题剩余',instruction:'请在地图上找到：',hint:'提示：位于',choose:'点击地图上的国家开始答题',correct:'答对了！',inWord:'在',points:'分',wrong:'差一点！你选择了',answer:'，正确答案是',next:'下一题',complete:'挑战完成',finalPrefix:'你的得分是',playAgain:'再玩一次',loading:'正在加载详细世界地图…',loadError:'地图加载失败，请检查网络连接后刷新页面。',great:'太棒了，你是地图高手！',good:'不错！再玩一次，你会记住更多国家。',practice:'继续练习，很快就能环游世界啦！',select:'选择',learn:'国家小知识',founded:'成立/独立',population:'人口（约）',special:'特别之处',famous:'著名地点',speak:'🔊 朗读',stopSpeak:'⏹ 停止朗读',family:'家庭进度',familyCorrect:'已掌握',familyRight:'答对',familyWrong:'答错',timeout:'时间到！',stats:(correct,total,best)=>`答对 ${correct}/${total} 题 · 正确率 ${Math.round(correct/total*100)}% · 最高连对 ${best}`},
+  en:{title:'Where in the World?',subtitle:'Read the question and find the correct country on the map.',restart:'Restart',logout:'Log out',score:'Score',question:'Question',streak:'Streak',timer:'Time left',instruction:'Find this country on the map:',hint:'Hint: Located in ',choose:'Click a country on the map to answer',correct:'Correct! ',inWord:' is in ',points:'points',wrong:'Not quite! You selected ',answer:'. The correct answer is ',next:'Next question',complete:'Challenge complete',finalPrefix:'Your score is',playAgain:'Play again',loading:'Loading the detailed world map…',loadError:'The map could not load. Check your connection and refresh the page.',great:'Excellent — you are a map master!',good:'Nice work! Play again to learn even more countries.',practice:'Keep practising — you will know the world in no time!',select:'Select',learn:'Country facts',founded:'Founded / independent',population:'Population (approx.)',special:'What makes it special',famous:'Famous places',speak:'🔊 Read aloud',stopSpeak:'⏹ Stop reading',family:'Family progress',familyCorrect:'Mastered',familyRight:'Correct',familyWrong:'Wrong',timeout:'Time’s up!',correctList:'Correct countries',wrongList:'Missed countries',stats:(correct,total,best)=>`${correct}/${total} correct · ${Math.round(correct/total*100)}% accuracy · Best streak ${best}`}
 };
 
 const scoreEl=document.querySelector('#score'), streakEl=document.querySelector('#streak');
@@ -71,6 +71,8 @@ function updateLanguage(){
   document.querySelector('#restartBtn').textContent=t.restart;document.querySelector('#scoreLabel').textContent=t.score;
   document.querySelector('#questionLabel').textContent=t.question;document.querySelector('#streakLabel').textContent=t.streak;
   document.querySelector('#timerLabel').textContent=t.timer;
+  familyBtn.textContent=t.family;
+  logoutBtn.textContent=t.logout;
   document.querySelector('#correctListTitle').textContent=language==='zh'?'答对的国家':t.correctList;
   document.querySelector('#wrongListTitle').textContent=language==='zh'?'答错的国家':t.wrongList;
   speakBtn.textContent=t.speak;
@@ -81,6 +83,7 @@ function updateLanguage(){
   countryLayer.selectAll('.country').attr('aria-label',d=>countryInfo[Number(d.id)]?`${t.select} ${language==='zh'?countryInfo[Number(d.id)][0]:d.properties.name}`:'');
   if(questions.length&&current<questions.length)renderQuestionText();
   if(questions.length&&current<questions.length&&!learningCard.hidden)renderLearningCard(questions[current]);
+  if(!familyPanel.hidden&&familyRows.length)renderFamilyProgress();
   if(!gameOver.hidden){renderFinalMessage();document.querySelector('#finalStats').textContent=ui[language].stats(correctAnswers,questions.length,bestStreak);renderAnswerLists();}
 }
 
@@ -194,13 +197,15 @@ document.querySelector('#enBtn').addEventListener('click',()=>{language='en';upd
 speakBtn.addEventListener('click',speakCurrentCountry);
 const loginPanel=document.querySelector('#loginPanel'),gameArea=document.querySelector('#gameArea'),loginBtn=document.querySelector('#loginBtn'),usernameSelect=document.querySelector('#usernameSelect'),passwordInput=document.querySelector('#passwordInput'),loginError=document.querySelector('#loginError'),logoutBtn=document.querySelector('#logoutBtn');
 const familyBtn=document.querySelector('#familyBtn'),familyPanel=document.querySelector('#familyPanel'),familyProgress=document.querySelector('#familyProgress');
+let familyRows=[];
+function renderFamilyProgress(){const t=ui[language];document.querySelector('#familyTitle').textContent=t.family;familyBtn.textContent=t.family;familyProgress.innerHTML=`<ul>${familyRows.map(row=>`<li>${row.username}: ${t.familyCorrect} ${row.mastered_countries} · ${t.familyRight} ${row.correct_answers} · ${t.familyWrong} ${row.wrong_answers}</li>`).join('')}</ul>`;}
 async function enterGame(){loginPanel.hidden=true;gameArea.hidden=false;logoutBtn.hidden=false;await loadUserProgress();if(availableCountries.length)startGame();}
 async function checkLogin(){const response=await fetch('/api/me');if(response.ok)enterGame();}
 loginBtn.addEventListener('click',async()=>{loginError.hidden=true;loginBtn.disabled=true;const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:usernameSelect.value,password:passwordInput.value})});loginBtn.disabled=false;if(response.ok){passwordInput.value='';enterGame();}else{loginError.textContent=(await response.json().catch(()=>({}))).error||'登录失败';loginError.hidden=false;}});
 passwordInput.addEventListener('keydown',event=>{if(event.key==='Enter')loginBtn.click();});
 logoutBtn.addEventListener('click',async()=>{await fetch('/api/logout',{method:'POST'});window.location.reload();});
 checkLogin();
-familyBtn.addEventListener('click',async()=>{const response=await fetch('/api/family-progress');if(!response.ok)return;const rows=await response.json();familyPanel.hidden=!familyPanel.hidden;if(!familyPanel.hidden)familyProgress.innerHTML=`<ul>${rows.map(row=>`<li>${row.username}：已掌握 ${row.mastered_countries} 个 · 答对 ${row.correct_answers} 次 · 答错 ${row.wrong_answers} 次</li>`).join('')}</ul>`;});
+familyBtn.addEventListener('click',async()=>{if(!familyRows.length){const response=await fetch('/api/family-progress');if(!response.ok)return;familyRows=await response.json();}familyPanel.hidden=!familyPanel.hidden;if(!familyPanel.hidden)renderFamilyProgress();});
 feedbackEl.textContent='正在加载详细世界地图…';
 d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(drawMap).catch(()=>{
   feedbackEl.textContent='地图加载失败，请检查网络连接后刷新页面。';feedbackEl.className='feedback bad';

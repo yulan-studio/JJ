@@ -13,7 +13,7 @@ button { font: inherit; }
 h1, h2, p { margin-top: 0; }
 h1 { margin-bottom: 6px; font-size: clamp(2rem, 6vw, 4.2rem); line-height: .95; letter-spacing: -.055em; }
 .subtitle { margin-bottom: 0; color: #587087; }
-.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; justify-content: flex-end; }
 .language-switch { display: flex; padding: 4px; border-radius: 999px; background: rgba(255,255,255,.75); border: 1px solid #cbd9df; }
 .language-button { border: 0; border-radius: 999px; padding: 8px 13px; color: #587087; background: transparent; cursor: pointer; font-weight: 750; }
 .language-button.active { color: #fff; background: #e06435; }
@@ -69,7 +69,7 @@ h1 { margin-bottom: 6px; font-size: clamp(2rem, 6vw, 4.2rem); line-height: .95; 
 @media (max-width: 620px) {
   .game-shell { width: min(100% - 20px, 1100px); padding-top: 20px; }
   .hero { align-items: flex-end; }
-  .header-actions { flex-direction: column; align-items: flex-end; }
+  .header-actions { flex-direction: row; align-items: center; justify-content: flex-start; max-width: 100%; overflow-x: auto; padding-bottom: 2px; }
   .subtitle { display: none; }
   .scoreboard { grid-template-columns: repeat(2, 1fr); }
   .scoreboard div { padding: 12px; text-align: center; }
