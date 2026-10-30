@@ -10,7 +10,7 @@
   <main class="game-shell">
     <header class="hero">
       <div>
-        <p class="eyebrow">地理小挑战</p>
+        <p id="eyebrowLabel" class="eyebrow">地理小挑战</p>
         <h1>世界在哪里？</h1>
         <p class="subtitle">看题目，在地图上找到正确的国家。</p>
       </div>
@@ -26,8 +26,8 @@
     </header>
 
     <section id="loginPanel" class="login-panel">
-      <h2>家庭登录</h2>
-      <p>请选择名字并输入密码开始游戏</p>
+      <h2 id="loginTitle">家庭登录</h2>
+      <p id="loginHint">请选择名字并输入密码开始游戏</p>
       <div class="login-row">
         <select id="usernameSelect"><option value="dad">dad</option><option value="mom">mom</option><option value="jj">jj</option><option value="doudou">doudou</option></select>
         <input id="passwordInput" type="password" autocomplete="current-password" placeholder="密码">
