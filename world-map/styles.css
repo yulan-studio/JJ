@@ -18,6 +18,12 @@ h1 { margin-bottom: 6px; font-size: clamp(2rem, 6vw, 4.2rem); line-height: .95; 
 .language-button { border: 0; border-radius: 999px; padding: 8px 13px; color: #587087; background: transparent; cursor: pointer; font-weight: 750; }
 .language-button.active { color: #fff; background: #e06435; }
 .scoreboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.login-panel { margin-bottom: 18px; padding: 24px; border: 1px solid rgba(28,73,86,.1); border-radius: 22px; background: rgba(255,255,255,.86); text-align: center; }
+.login-panel h2 { margin: 0 0 6px; }
+.login-panel p { color: #587087; }
+.login-row { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.login-row select, .login-row input { min-height: 44px; padding: 0 13px; border: 1px solid #cbd9df; border-radius: 10px; font: inherit; }
+.login-error { color: #b3382b !important; font-weight: 700; }
 .scoreboard div, .question-card, .map-card, .game-over { border: 1px solid rgba(28,73,86,.1); border-radius: 22px; background: rgba(255,255,255,.82); box-shadow: 0 16px 45px rgba(32,75,68,.09); }
 .scoreboard div { padding: 15px 20px; }
 .scoreboard span { display: block; color: #698094; font-size: .82rem; }
@@ -70,4 +76,6 @@ h1 { margin-bottom: 6px; font-size: clamp(2rem, 6vw, 4.2rem); line-height: .95; 
   .map-card { padding: 9px; }
   .country { stroke-width: 1.8; }
   .answer-lists { grid-template-columns: 1fr; }
+  .login-row { flex-direction: column; }
+  .login-row select, .login-row input, .login-row button { width: 100%; }
 }

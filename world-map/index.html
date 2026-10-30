@@ -20,8 +20,23 @@
           <button id="enBtn" class="language-button" type="button">English</button>
         </div>
         <button id="restartBtn" class="secondary-button" type="button">重新开始</button>
+        <button id="familyBtn" class="secondary-button" type="button">家庭进度</button>
       </div>
     </header>
+
+    <section id="loginPanel" class="login-panel">
+      <h2>家庭登录</h2>
+      <p>请选择名字并输入密码开始游戏</p>
+      <div class="login-row">
+        <select id="usernameSelect"><option value="爸爸">爸爸</option><option value="妈妈">妈妈</option><option value="JJ">JJ</option><option value="豆豆">豆豆</option></select>
+        <input id="passwordInput" type="password" autocomplete="current-password" placeholder="密码">
+        <button id="loginBtn" class="primary-button" type="button">登录</button>
+      </div>
+      <p id="loginError" class="login-error" hidden></p>
+    </section>
+
+    <div id="gameArea" hidden>
+    <section id="familyPanel" class="login-panel" hidden><h2>家庭进度</h2><div id="familyProgress"></div></section>
 
     <section class="scoreboard" aria-label="游戏成绩">
       <div><span id="scoreLabel">得分</span><strong id="score">0</strong></div>
@@ -63,6 +78,7 @@
       </div>
       <button id="playAgainBtn" class="primary-button" type="button">再玩一次</button>
     </section>
+    </div>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>

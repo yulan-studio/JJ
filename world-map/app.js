@@ -140,6 +140,7 @@ function chooseCountry(feature,element,isTimeout=false){
   renderQuestionText();if(isTimeout)feedbackEl.textContent=ui[language].timeout;
   scoreEl.textContent=score;streakEl.textContent=streak;nextBtn.hidden=false;
   renderLearningCard(target);
+  fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({countryId:target.id,correct:lastAnswer.correct})}).catch(()=>{});
 }
 
 function drawMap(world){
@@ -185,6 +186,14 @@ document.querySelector('#playAgainBtn').addEventListener('click',startGame);
 document.querySelector('#zhBtn').addEventListener('click',()=>{language='zh';updateLanguage();});
 document.querySelector('#enBtn').addEventListener('click',()=>{language='en';updateLanguage();});
 speakBtn.addEventListener('click',speakCurrentCountry);
+const loginPanel=document.querySelector('#loginPanel'),gameArea=document.querySelector('#gameArea'),loginBtn=document.querySelector('#loginBtn'),usernameSelect=document.querySelector('#usernameSelect'),passwordInput=document.querySelector('#passwordInput'),loginError=document.querySelector('#loginError');
+const familyBtn=document.querySelector('#familyBtn'),familyPanel=document.querySelector('#familyPanel'),familyProgress=document.querySelector('#familyProgress');
+async function enterGame(){loginPanel.hidden=true;gameArea.hidden=false;}
+async function checkLogin(){const response=await fetch('/api/me');if(response.ok)enterGame();}
+loginBtn.addEventListener('click',async()=>{loginError.hidden=true;loginBtn.disabled=true;const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:usernameSelect.value,password:passwordInput.value})});loginBtn.disabled=false;if(response.ok){passwordInput.value='';enterGame();}else{loginError.textContent=(await response.json().catch(()=>({}))).error||'登录失败';loginError.hidden=false;}});
+passwordInput.addEventListener('keydown',event=>{if(event.key==='Enter')loginBtn.click();});
+checkLogin();
+familyBtn.addEventListener('click',async()=>{const response=await fetch('/api/family-progress');if(!response.ok)return;const rows=await response.json();familyPanel.hidden=!familyPanel.hidden;if(!familyPanel.hidden)familyProgress.innerHTML=`<ul>${rows.map(row=>`<li>${row.username}：已掌握 ${row.mastered_countries} 个 · 答对 ${row.correct_answers} 次 · 答错 ${row.wrong_answers} 次</li>`).join('')}</ul>`;});
 feedbackEl.textContent='正在加载详细世界地图…';
 d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(drawMap).catch(()=>{
   feedbackEl.textContent='地图加载失败，请检查网络连接后刷新页面。';feedbackEl.className='feedback bad';
