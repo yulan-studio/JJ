@@ -4,5 +4,5 @@ pages_build_output_dir = "."
 
 [[d1_databases]]
 binding = "DB"
-database_name = "jj-world-map"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_name = "jj-world-map-db"
+database_id = "296a3b5e-3d44-4df8-a3ed-64129bab2e96"
