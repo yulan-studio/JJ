@@ -1,5 +1,5 @@
 import {createSession,setCookie} from './_auth.js';
-const keys={'爸爸':'FAMILY_DAD_PASSWORD','妈妈':'FAMILY_MOM_PASSWORD','JJ':'FAMILY_JJ_PASSWORD','豆豆':'FAMILY_DOUDOU_PASSWORD'};
+const keys={'dad':'FAMILY_DAD_PASSWORD','mom':'FAMILY_MOM_PASSWORD','jj':'FAMILY_JJ_PASSWORD','doudou':'FAMILY_DOUDOU_PASSWORD'};
 export async function onRequestPost({request,env}) {
   const body=await request.json().catch(()=>({})), username=String(body.username||''), password=String(body.password||'');
   if(!keys[username]||!env[keys[username]]||password!==env[keys[username]])return Response.json({error:'用户名或密码不正确'},{status:401});
